@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from library.models import Book
+from library.models import Book, BookLike
+
+
+class BookLikeSerializer(serializers.Serializer):
+    class Meta:
+        model = BookLike
+        fields = ['date']
 
 
 class BookSerializer(serializers.Serializer):
@@ -7,6 +13,8 @@ class BookSerializer(serializers.Serializer):
     title = serializers.CharField(required=False, allow_blank=True, max_length=100)
     description = serializers.CharField(required=False, allow_blank=True, max_length=255)
     cover_url = serializers.CharField(required=False, allow_blank=True, max_length=100)
+    # book_likes = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    book_likes = BookLikeSerializer(many=True, read_only=True)
 
     def create(self, validated_data):
         """
@@ -24,3 +32,7 @@ class BookSerializer(serializers.Serializer):
 
         instance.save()
         return instance
+
+    class Meta:
+        model = Book
+        fields = ['__all__', 'book_likes']
